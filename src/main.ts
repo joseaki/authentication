@@ -8,10 +8,7 @@ import Global from './config/global.config';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: [
-      'http://localhost:3001',
-      'https://sms-front-admin2-381r5c4zo-joseaki1.vercel.app',
-    ],
+    origin: ['http://localhost:3001', 'https://sms-front-admin2.vercel.app'],
     credentials: true,
   });
   app.use(cookieParser(['secret 1', 'secret 2']));
