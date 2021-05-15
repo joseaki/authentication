@@ -3,6 +3,7 @@ import { DocumentBuilder, SwaggerDocumentOptions } from '@nestjs/swagger';
 import { SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
+import Global from './config/global.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -25,6 +26,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config, options);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(3000);
+  await app.listen(Global.port);
 }
 bootstrap();
