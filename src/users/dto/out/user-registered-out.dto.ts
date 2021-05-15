@@ -1,6 +1,5 @@
 import { Expose } from 'class-transformer';
-import { IsBoolean, IsEmail, IsString } from 'class-validator';
-import { ICreateDateParam, IIdParam } from 'src/common/Interfaces/IUniversal';
+import { ICreateDateParam, IIdParam } from 'src/Interfaces/IUniversal';
 import { IUserComplete, IUserEmail } from 'src/interfaces/IUser';
 
 export class CreateUserOutDto

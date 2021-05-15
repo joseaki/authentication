@@ -23,7 +23,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserPasswordRecovery } from './dto/in/password_recovery.dto';
 import { HeaderDTO } from './dto/in/header.dto';
 import { RequestHeader } from './decorators/request-header.decorator';
-import { IHeader } from 'src/common/interfaces/IHeaders';
+import { IHeader } from 'src/interfaces/IHeaders';
 import { HeadersAuthGuard } from './guards/headers.guard';
 
 @ApiTags('User oeprations')

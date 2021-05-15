@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 import { IsDefined, IsString } from 'class-validator';
-import { IHeader } from 'src/common/interfaces/IHeaders';
+import { IHeader } from 'src/interfaces/IHeaders';
 
 export class HeaderDTO implements IHeader {
   @IsString()

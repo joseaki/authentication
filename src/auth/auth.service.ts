@@ -8,7 +8,7 @@ import {
 } from 'src/interfaces/IUser';
 import { UsersService } from 'src/users/users.service';
 import { exists } from 'fs';
-import { IHeader } from 'src/common/interfaces/IHeaders';
+import { IHeader } from 'src/interfaces/IHeaders';
 
 @Injectable()
 export class AuthService {

@@ -9,7 +9,7 @@ if (result.error) {
 }
 
 export const Global = {
-  port: parseInt(process.env.SERVER_PORT) || 3000,
+  port: parseInt(process.env.PORT) || 3000,
 };
 
 export default Global;
