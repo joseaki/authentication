@@ -8,7 +8,7 @@ import {
   IUpdateDateParam,
   IUpdateUserParam,
   ICommentParam,
-} from '../../Interfaces/IUniversal';
+} from 'src/interfaces/IUniversal';
 import {
   PrimaryGeneratedColumn,
   Column,

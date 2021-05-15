@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { ICreateDateParam, IIdParam } from 'src/Interfaces/IUniversal';
+import { ICreateDateParam, IIdParam } from 'src/interfaces/IUniversal';
 import { IUserComplete, IUserEmail } from 'src/interfaces/IUser';
 
 export class CreateUserOutDto
