@@ -4,17 +4,20 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   IUserCompleteRegistration,
+  IUserEmail,
   IUserRegistration,
 } from 'src/interfaces/IUser';
 import { UsersService } from 'src/users/users.service';
 import { exists } from 'fs';
 import { IHeader } from 'src/interfaces/IHeaders';
+import { MailService } from 'src/mailer/mailer.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UsersService,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
   validateUser(email: string, pass: string, clientId: number): Promise<any> {
@@ -35,13 +38,13 @@ export class AuthService {
     });
   }
 
-  async register(user: IUserRegistration, headers: IHeader) {
+  async register(user: IUserRegistration, clientId) {
     const salt = await bcrypt.genSalt(12);
     const hash = await bcrypt.hash(user.password, salt);
     const userToBeSaved: IUserCompleteRegistration = {
       email: user.email,
       password: hash,
-      clientId: +headers['client-id'],
+      clientId: clientId,
     };
     return this.userService.saveUserRegistration(userToBeSaved);
   }
@@ -61,5 +64,13 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
       refresh_token: randomToken,
     };
+  }
+
+  async restorePassword(user: IUserEmail, clientId: number) {
+    const userData = await this.userService.emailExists(user.email, clientId);
+    return this.mailService.sendRestorePasswordEmail(
+      userData,
+      'https://recovey.com',
+    );
   }
 }

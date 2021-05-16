@@ -30,10 +30,9 @@ import { HeadersAuthGuard } from './guards/headers.guard';
 @ApiHeader({
   name: 'client-id',
   description: 'App Id that user belongs to',
-  allowEmptyValue: false,
   required: true,
   schema: {
-    default: 1,
+    default: '1',
   },
 })
 @Controller('auth')
@@ -55,7 +54,7 @@ export class AuthController {
     @RequestHeader(HeaderDTO) headers: IHeader,
     @Body(new ValidateBodyPipe()) createUserDto: RegisterUserDto,
   ) {
-    return this.authService.register(createUserDto, headers);
+    return this.authService.register(createUserDto, +headers['client-id']);
   }
 
   // LOGIN USER
@@ -80,15 +79,18 @@ export class AuthController {
   // RESTORE USER PASSWORD
   @Post('change_password')
   changePassword(
-    @Headers('client-id') clientId: string,
+    @RequestHeader(HeaderDTO) headers: IHeader,
     @Body(new ValidateBodyPipe()) restoreUserPassword: UserPasswordRecovery,
   ) {
-    return restoreUserPassword;
+    return this.authService.restorePassword(
+      restoreUserPassword,
+      +headers['client-id'],
+    );
   }
 
+  // DEMO COOKIES
   @Get('user')
   getUser(@Req() request, @Res({ passthrough: true }) response) {
-    console.log(process.env.NODE_ENV);
     const isProduction = process.env.NODE_ENV === 'production';
     response.cookie('ARTdsd', 'asdfa', {
       expires: new Date(new Date().getTime() + 60 * 60 * 1000),
@@ -97,7 +99,6 @@ export class AuthController {
       secure: isProduction ? true : false,
       path: '/auth/usersave',
     });
-    console.log(request.cookies);
     return { hola: 'mundo' };
   }
 

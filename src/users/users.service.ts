@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RegisterUserDto } from './dto/in/register-user.dto';
@@ -41,8 +41,17 @@ export class UsersService {
   }
 
   findByEmail(email: string, clientId: number) {
-    return this.userRepository.findOne({
+    return this.completeuserRepository.findOne({
       where: { email: email, clientId: clientId },
     });
+  }
+
+  async emailExists(email: string, clientId: number) {
+    const user = await this.findByEmail(email, clientId);
+    if (user) {
+      return user;
+    } else {
+      throw new UnprocessableEntityException('User does not exists');
+    }
   }
 }
