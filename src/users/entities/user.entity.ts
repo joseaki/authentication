@@ -2,34 +2,42 @@ import { BaseEntity } from 'src/common/entities/base.entity';
 import {
   IClientId,
   ICompleteUserRegistration,
+  IRestorePassword,
   IUserComplete,
   IUserMetadata,
   IUserRegistration,
 } from 'src/interfaces/IUser';
-import { ChildEntity, Column, Entity, TableInheritance } from 'typeorm';
+import { ChildEntity, Column, Entity, TableInheritance, Unique } from 'typeorm';
 
 @Entity()
-@TableInheritance({ column: { type: 'varchar', name: 'type' } })
+@Unique('UNQ_USER', ['email', 'clientId'])
+// @TableInheritance({ column: { type: 'varchar', name: 'type' } })
 export class User
   extends BaseEntity
-  implements IUserRegistration, IUserComplete, IClientId {
+  implements
+    IUserRegistration,
+    IUserComplete,
+    IClientId,
+    ICompleteUserRegistration,
+    IUserMetadata,
+    IRestorePassword {
   @Column({ type: 'boolean', default: false })
   isComplete: boolean;
 
   @Column()
   email: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @Column({ nullable: false })
   clientId: number;
-}
+  // }
 
-@ChildEntity()
-export class CompleteUserInfo
-  extends User
-  implements ICompleteUserRegistration, IUserMetadata {
+  // @ChildEntity()
+  // export class CompleteUserInfo
+  //   extends User
+  //   implements ICompleteUserRegistration, IUserMetadata, IRestorePassword {
   @Column()
   username: string;
 
@@ -68,4 +76,13 @@ export class CompleteUserInfo
 
   @Column()
   registeredIP: string;
+
+  @Column()
+  restorePasswordToken: string;
+
+  @Column()
+  restorePasswordDate: Date;
+
+  @Column({ default: false })
+  isValidPasswordToken: boolean;
 }

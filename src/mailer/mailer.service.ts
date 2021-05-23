@@ -4,7 +4,7 @@ import EmailConfig from 'src/config/email.config';
 import * as handlebars from 'handlebars';
 import * as fs from 'fs';
 import * as path from 'path';
-import { CompleteUserInfo, User } from 'src/users/entities/user.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class MailService {
@@ -26,10 +26,7 @@ export class MailService {
     return transporter;
   }
 
-  private createPasswordRecoveryMessage(
-    user: CompleteUserInfo,
-    recoveryLink: string,
-  ) {
+  private createPasswordRecoveryMessage(user: User, recoveryLink: string) {
     var source = fs.readFileSync(
       path.join(__dirname, 'templates', 'password-reset.hbs'),
       'utf8',
@@ -53,15 +50,13 @@ export class MailService {
   private async sendEmail(message: any) {
     try {
       const transport = this.createTransporter();
-      const info = await transport.sendMail(message);
-      return 'Email sent';
+      return transport.sendMail(message);
     } catch (error) {
-      console.log(error);
       throw new UnprocessableEntityException('Error sending email');
     }
   }
 
-  async sendRestorePasswordEmail(user: CompleteUserInfo, recoveryLink: string) {
+  async sendRestorePasswordEmail(user: User, recoveryLink: string) {
     const message = this.createPasswordRecoveryMessage(user, recoveryLink);
     return this.sendEmail(message);
   }

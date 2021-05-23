@@ -33,8 +33,19 @@ export interface IUserComplete {
   isComplete: boolean;
 }
 
+export interface IRestorePassword {
+  restorePasswordToken: string;
+  restorePasswordDate: Date;
+  isValidPasswordToken: boolean;
+}
+
 export interface IUserRegistration extends IUserEmail, IUserPassword {}
 
 export interface IUserCompleteRegistration
   extends IUserRegistration,
     IClientId {}
+
+export interface IUserPasswordUpdate {
+  token: string;
+  password: string;
+}

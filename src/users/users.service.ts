@@ -1,26 +1,25 @@
-import * as bcrypt from 'bcrypt';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { RegisterUserDto } from './dto/in/register-user.dto';
 import { UpdateUserDto } from './dto/in/update-user.dto';
-import { CompleteUserInfo, User } from './entities/user.entity';
-import { SALT_MIN, SALT_MAX } from 'src/common/constants';
-import {
-  IUserCompleteRegistration,
-  IUserRegistration,
-} from 'src/interfaces/IUser';
+import { User } from './entities/user.entity';
+import { IUserCompleteRegistration } from 'src/interfaces/IUser';
+import { SqlException } from 'src/exceptions/sql.exception';
+import { UserRepository } from './repository/user.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
-    @InjectRepository(User)
-    private completeuserRepository: Repository<CompleteUserInfo>,
-  ) {}
+  constructor(private userRepository: UserRepository) {}
 
-  saveUserRegistration(userRegistrationData: IUserCompleteRegistration) {
-    return this.userRepository.save(userRegistrationData);
+  async saveUserRegistration(userRegistrationData: IUserCompleteRegistration) {
+    try {
+      const savedResponse = await this.userRepository.save(
+        userRegistrationData,
+      );
+      return savedResponse;
+    } catch (error) {
+      throw new SqlException(error);
+    }
   }
 
   findAll() {
@@ -31,27 +30,67 @@ export class UsersService {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return this.completeuserRepository.update(id, updateUserDto);
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    try {
+      return await this.userRepository.update(id, updateUserDto);
+    } catch (error) {
+      throw new SqlException(error);
+    }
   }
 
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
 
-  findByEmail(email: string, clientId: number) {
-    return this.completeuserRepository.findOne({
-      where: { email: email, clientId: clientId },
+  async findPasswordByEmail(email: string, clientId: number) {
+    try {
+      return await this.userRepository.findDelicateUserData(email, clientId);
+    } catch (error) {
+      throw new SqlException(error);
+    }
+  }
+
+  async findByEmail(email: string, clientId: number) {
+    try {
+      return await this.userRepository.findUserData(email, clientId);
+    } catch (error) {
+      throw new SqlException(error);
+    }
+  }
+
+  async findByRestoreToken(token: string, clientId: number) {
+    try {
+      return await this.userRepository.findByRestorePasswordToken(
+        token,
+        clientId,
+      );
+    } catch (error) {
+      throw new SqlException(error);
+    }
+  }
+
+  updatePassword(user: User) {
+    return this.userRepository.save({
+      id: user.id,
+      password: user.password,
+      isValidPasswordToken: false,
     });
   }
 
   async emailExists(email: string, clientId: number) {
-    const user = await this.findByEmail(email, clientId);
-    if (user) {
-      return user;
-    } else {
-      throw new UnprocessableEntityException('User does not exists');
+    try {
+      return await this.findByEmail(email, clientId);
+    } catch (error) {
+      throw new SqlException(error);
     }
+  }
+
+  saveRestorePasswordToken(user: User, token) {
+    this.userRepository.save({
+      id: user.id,
+      restorePasswordToken: token,
+      restorePasswordDate: new Date(),
+      isValidPasswordToken: true,
+    });
   }
 }

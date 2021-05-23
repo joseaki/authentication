@@ -20,7 +20,10 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { LoginUserDto } from './dto/in/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
-import { UserPasswordRecovery } from './dto/in/password_recovery.dto';
+import {
+  UserPasswordRecovery,
+  UserPasswordUpdate,
+} from './dto/in/password_recovery.dto';
 import { HeaderDTO } from './dto/in/header.dto';
 import { RequestHeader } from './decorators/request-header.decorator';
 import { IHeader } from 'src/interfaces/IHeaders';
@@ -73,7 +76,7 @@ export class AuthController {
       sameSite: 'lax',
       httpOnly: true,
     });
-    return this.authService.login(req.user);
+    return credentials;
   }
 
   // RESTORE USER PASSWORD
@@ -84,6 +87,18 @@ export class AuthController {
   ) {
     return this.authService.restorePassword(
       restoreUserPassword,
+      +headers['client-id'],
+    );
+  }
+
+  // Update Password
+  @Post('update_password')
+  updatePassword(
+    @RequestHeader(HeaderDTO) headers: IHeader,
+    @Body(new ValidateBodyPipe()) updateUserPassword: UserPasswordUpdate,
+  ) {
+    return this.authService.updatePassword(
+      updateUserPassword,
       +headers['client-id'],
     );
   }
