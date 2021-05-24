@@ -21,16 +21,16 @@ import { CreateUserOutDto } from './dto/out/user-registered-out.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Patch(':id')
-  @ApiResponse({
-    status: 200,
-    description: 'Patch any parameter from user object',
-  })
-  update(
-    @Param('id') id: string,
-    @Body(new ValidateBodyPipe())
-    updateUserDto: UpdateUserDto,
-  ) {
-    return this.usersService.update(+id, updateUserDto);
-  }
+  // @Patch(':id')
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'Patch any parameter from user object',
+  // })
+  // update(
+  //   @Param('id') id: string,
+  //   @Body(new ValidateBodyPipe())
+  //   updateUserDto: UpdateUserDto,
+  // ) {
+  //   return this.usersService.update(+id, updateUserDto);
+  // }
 }

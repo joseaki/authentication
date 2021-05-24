@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   IUserCompleteRegistration,
@@ -30,66 +30,89 @@ export class AuthService {
           email,
           clientId,
         );
-        console.log(user);
-        if (user) {
-          bcrypt.compare(pass, user.password, function (err, result) {
-            console.log(err);
-            console.log(result);
-            if (result === true) {
-              const { password, ...rest } = user;
-              resolve(rest);
-            } else {
-              reject('incorrect password');
-            }
-          });
-        } else {
-          reject('user does not exists');
-        }
+        bcrypt.compare(pass, user.password, function (err, result) {
+          if (result === true) {
+            const { password, ...rest } = user;
+            resolve(rest);
+          } else {
+            reject(new BadRequestException('Incorrect password'));
+          }
+        });
       } catch (error) {
-        reject(error);
+        reject(new BadRequestException('Incorrect user or password'));
       }
     });
   }
 
   async register(user: IUserRegistration, clientId) {
-    const encriptedPassword = await this.encriptPassword(user.password);
-    const userToBeSaved: IUserCompleteRegistration = {
-      email: user.email,
-      password: encriptedPassword,
-      clientId: clientId,
-    };
-    return this.userService.saveUserRegistration(userToBeSaved);
+    try {
+      const encriptedPassword = await this.encriptPassword(user.password);
+      const userToBeSaved: IUserCompleteRegistration = {
+        email: user.email,
+        password: encriptedPassword,
+        clientId: clientId,
+      };
+      return await this.userService.saveUserRegistration(userToBeSaved);
+    } catch (error) {
+      throw new BadRequestException('User already registered');
+    }
   }
 
   async login(user: any) {
-    const payload = {
-      username: user.email,
-      sub: user.id,
-      isComplete: user.isComplete,
-    };
-    const refreshToken = this.getRandomToken(128);
-    return {
-      access_token: this.jwtService.sign(payload),
-      refresh_token: refreshToken,
-    };
+    try {
+      const payload = {
+        username: user.email,
+        sub: user.id,
+        isComplete: user.isComplete,
+      };
+      const refreshToken = this.getRandomToken(128);
+      return {
+        access_token: this.jwtService.sign(payload),
+        refresh_token: refreshToken,
+      };
+    } catch (error) {
+      throw new BadRequestException('Incorrect user or password');
+    }
   }
 
   async restorePassword(user: IUserEmail, clientId: number) {
-    const userData = await this.userService.emailExists(user.email, clientId);
-    const restorePasswordToken = this.getRandomToken(64);
-    this.userService.saveRestorePasswordToken(userData, restorePasswordToken);
-    return this.mailService.sendRestorePasswordEmail(
-      userData,
-      `https://recovey.com/?client=${clientId}&code=${restorePasswordToken}`,
-    );
+    try {
+      const userData = await this.userService.findByEmail(user.email, clientId);
+      if (userData) {
+        const restorePasswordToken = this.getRandomToken(64);
+        this.userService.saveRestorePasswordToken(
+          userData,
+          restorePasswordToken,
+        );
+        return this.mailService.sendRestorePasswordEmail(
+          userData,
+          `https://recovey.com/?client=${clientId}&code=${restorePasswordToken}`,
+        );
+      } else {
+        throw new BadRequestException('User not found');
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 
   async updatePassword(user: IUserPasswordUpdate, clientId: number) {
-    const userData = await this.validateUserUpdateToken(user.token, clientId);
-    const encriptedPassword = await this.encriptPassword(user.password);
-    userData.password = encriptedPassword;
-    return this.userService.updatePassword(userData);
+    try {
+      const userData = await this.validateUserUpdateToken(user.token, clientId);
+      const encriptedPassword = await this.encriptPassword(user.password);
+      userData.password = encriptedPassword;
+      await this.userService.updatePassword(userData);
+      return { updated: true };
+    } catch (error) {
+      throw new BadRequestException(
+        'Password already changed or link is expired',
+      );
+    }
   }
+
+  // ==================================================
+  // =============== PRIVATE METHODS ==================
+  // ==================================================
 
   private async encriptPassword(password: string) {
     const salt = await bcrypt.genSalt(12);
@@ -105,13 +128,20 @@ export class AuthService {
   }
 
   private async validateUserUpdateToken(token, clientId): Promise<User> {
-    const userData = await this.userService.findByRestoreToken(token, clientId);
-    const currentDate = new Date().getTime();
-    const tokenValidUntil =
-      new Date(userData.restorePasswordDate).getTime() + 30 * 60 * 1000;
-    if (currentDate > tokenValidUntil) {
-      throw new UnauthorizedException('Expired token');
+    try {
+      const userData = await this.userService.findByRestoreToken(
+        token,
+        clientId,
+      );
+      const currentDate = new Date().getTime();
+      const tokenValidUntil =
+        new Date(userData.restorePasswordDate).getTime() + 30 * 60 * 1000;
+      if (currentDate > tokenValidUntil) {
+        throw new UnauthorizedException('Expired token');
+      }
+      return userData;
+    } catch (error) {
+      throw error;
     }
-    return userData;
   }
 }

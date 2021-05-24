@@ -1,4 +1,8 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotAcceptableException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/in/update-user.dto';
@@ -18,54 +22,51 @@ export class UsersService {
       );
       return savedResponse;
     } catch (error) {
-      throw new SqlException(error);
+      throw new NotAcceptableException('User already registered');
     }
-  }
-
-  findAll() {
-    return `This action returns all users`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     try {
       return await this.userRepository.update(id, updateUserDto);
     } catch (error) {
-      throw new SqlException(error);
+      throw new NotAcceptableException("Can't update user");
     }
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
   }
 
   async findPasswordByEmail(email: string, clientId: number) {
     try {
-      return await this.userRepository.findDelicateUserData(email, clientId);
+      const user = await this.userRepository.findDelicateUserData(
+        email,
+        clientId,
+      );
+      if (!user) throw new NotAcceptableException("Can't get a user");
+      return user;
     } catch (error) {
-      throw new SqlException(error);
+      throw error;
     }
   }
 
   async findByEmail(email: string, clientId: number) {
     try {
-      return await this.userRepository.findUserData(email, clientId);
+      const user = await this.userRepository.findUserData(email, clientId);
+      if (!user) throw new NotAcceptableException('User not found');
+      return user;
     } catch (error) {
-      throw new SqlException(error);
+      throw error;
     }
   }
 
   async findByRestoreToken(token: string, clientId: number) {
     try {
-      return await this.userRepository.findByRestorePasswordToken(
+      const user = await this.userRepository.findByRestorePasswordToken(
         token,
         clientId,
       );
+      if (!user) throw new NotAcceptableException("Can't get a user");
+      return user;
     } catch (error) {
-      throw new SqlException(error);
+      throw error;
     }
   }
 
@@ -75,14 +76,6 @@ export class UsersService {
       password: user.password,
       isValidPasswordToken: false,
     });
-  }
-
-  async emailExists(email: string, clientId: number) {
-    try {
-      return await this.findByEmail(email, clientId);
-    } catch (error) {
-      throw new SqlException(error);
-    }
   }
 
   saveRestorePasswordToken(user: User, token) {
