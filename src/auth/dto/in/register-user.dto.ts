@@ -1,5 +1,5 @@
 import { IsEmail, IsString } from 'class-validator';
-import { IClientId, IUserRegistration } from 'src/interfaces/IUser';
+import { IUserRegistration } from 'src/interfaces/IUser';
 
 export class RegisterUserDto implements IUserRegistration {
   /**

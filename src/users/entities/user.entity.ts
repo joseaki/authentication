@@ -7,7 +7,7 @@ import {
   IUserMetadata,
   IUserRegistration,
 } from 'src/interfaces/IUser';
-import { ChildEntity, Column, Entity, TableInheritance, Unique } from 'typeorm';
+import { Column, Entity, Unique } from 'typeorm';
 
 @Entity()
 @Unique('UNQ_USER', ['email', 'clientId'])

@@ -47,6 +47,26 @@ export class MailService {
     return message;
   }
 
+  private createPasswordRestoredMessage(user: User) {
+    var source = fs.readFileSync(
+      path.join(__dirname, 'templates', 'password-update.hbs'),
+      'utf8',
+    );
+    var template = handlebars.compile(source);
+
+    const message = {
+      from: 'recovery@password.com', // Sender address
+      to: user.email, // List of recipients
+      subject: 'Contraseña cambiada', // Subject line
+      html: template({
+        name: user.name,
+        lastname: user.lastname,
+      }),
+    };
+
+    return message;
+  }
+
   private async sendEmail(message: any) {
     try {
       const transport = this.createTransporter();
@@ -58,6 +78,11 @@ export class MailService {
 
   async sendRestorePasswordEmail(user: User, recoveryLink: string) {
     const message = this.createPasswordRecoveryMessage(user, recoveryLink);
+    return this.sendEmail(message);
+  }
+
+  async sendPasswordRestoredEmail(user: User) {
+    const message = this.createPasswordRestoredMessage(user);
     return this.sendEmail(message);
   }
 }

@@ -9,8 +9,6 @@ import {
   IUserRegistration,
 } from 'src/interfaces/IUser';
 import { UsersService } from 'src/users/users.service';
-import { exists } from 'fs';
-import { IHeader } from 'src/interfaces/IHeaders';
 import { MailService } from 'src/mailer/mailer.service';
 import { UnauthorizedException } from '@nestjs/common';
 import { User } from 'src/users/entities/user.entity';
@@ -102,6 +100,7 @@ export class AuthService {
       const encriptedPassword = await this.encriptPassword(user.password);
       userData.password = encriptedPassword;
       await this.userService.updatePassword(userData);
+      this.mailService.sendPasswordRestoredEmail(userData);
       return { updated: true };
     } catch (error) {
       throw new BadRequestException(

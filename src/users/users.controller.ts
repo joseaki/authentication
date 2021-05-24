@@ -1,20 +1,6 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { RegisterUserDto } from './dto/in/register-user.dto';
-import { UpdateUserDto } from './dto/in/update-user.dto';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ConvertResponseToDtoInterceptor } from 'src/Interceptors/convert-response-to-dto.interceptor';
-import { ValidateBodyPipe } from 'src/Pipes/validate-body.pipe';
-import { CreateUserOutDto } from './dto/out/user-registered-out.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Users')
 @Controller('user')

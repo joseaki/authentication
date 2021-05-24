@@ -1,14 +1,7 @@
-import {
-  Injectable,
-  NotAcceptableException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { UpdateUserDto } from './dto/in/update-user.dto';
 import { User } from './entities/user.entity';
 import { IUserCompleteRegistration } from 'src/interfaces/IUser';
-import { SqlException } from 'src/exceptions/sql.exception';
 import { UserRepository } from './repository/user.repository';
 
 @Injectable()
@@ -40,7 +33,7 @@ export class UsersService {
         email,
         clientId,
       );
-      if (!user) throw new NotAcceptableException("Can't get a user");
+      if (!user) throw new NotAcceptableException('Email does not exists');
       return user;
     } catch (error) {
       throw error;
@@ -50,7 +43,7 @@ export class UsersService {
   async findByEmail(email: string, clientId: number) {
     try {
       const user = await this.userRepository.findUserData(email, clientId);
-      if (!user) throw new NotAcceptableException('User not found');
+      if (!user) throw new NotAcceptableException('Email does not exists');
       return user;
     } catch (error) {
       throw error;

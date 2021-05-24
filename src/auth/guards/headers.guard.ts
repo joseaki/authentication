@@ -1,19 +1,12 @@
 import {
-  BadRequestException,
   CanActivate,
   ExecutionContext,
   Injectable,
-  SetMetadata,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 import { Observable } from 'rxjs';
-import {
-  RequestHeader,
-  validateHeaders,
-} from '../decorators/request-header.decorator';
 import { HeaderDTO } from '../dto/in/header.dto';
 
 @Injectable()

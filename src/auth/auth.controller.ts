@@ -5,11 +5,7 @@ import {
   UseGuards,
   UseInterceptors,
   Request,
-  Headers,
   Res,
-  Response,
-  Get,
-  Req,
 } from '@nestjs/common';
 import { ApiHeader, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ConvertResponseToDtoInterceptor } from 'src/Interceptors/convert-response-to-dto.interceptor';
@@ -28,6 +24,7 @@ import { HeaderDTO } from './dto/in/header.dto';
 import { RequestHeader } from './decorators/request-header.decorator';
 import { IHeader } from 'src/interfaces/IHeaders';
 import { HeadersAuthGuard } from './guards/headers.guard';
+import { UserLoginOutDto } from './dto/out/user-login-out.dto';
 
 @ApiTags('User oeprations')
 @ApiHeader({
@@ -62,8 +59,14 @@ export class AuthController {
 
   // LOGIN USER
   @Post('login')
+  @ApiResponse({
+    status: 201,
+    type: UserLoginOutDto,
+    description: 'User response after creation',
+  })
   @UseGuards(LocalAuthGuard)
   @UseGuards(HeadersAuthGuard)
+  @UseInterceptors(new ConvertResponseToDtoInterceptor(UserLoginOutDto))
   async login(
     @RequestHeader(HeaderDTO) headers: IHeader,
     @Body(new ValidateBodyPipe()) loginUserDto: LoginUserDto,
@@ -104,22 +107,22 @@ export class AuthController {
   }
 
   // DEMO COOKIES
-  @Get('user')
-  getUser(@Req() request, @Res({ passthrough: true }) response) {
-    const isProduction = process.env.NODE_ENV === 'production';
-    response.cookie('ARTdsd', 'asdfa', {
-      expires: new Date(new Date().getTime() + 60 * 60 * 1000),
-      sameSite: 'None',
-      httpOnly: true,
-      secure: isProduction ? true : false,
-      path: '/auth/usersave',
-    });
-    return { hola: 'mundo' };
-  }
+  // @Get('user')
+  // getUser(@Req() request, @Res({ passthrough: true }) response) {
+  //   const isProduction = process.env.NODE_ENV === 'production';
+  //   response.cookie('ARTdsd', 'asdfa', {
+  //     expires: new Date(new Date().getTime() + 60 * 60 * 1000),
+  //     sameSite: 'None',
+  //     httpOnly: true,
+  //     secure: isProduction ? true : false,
+  //     path: '/auth/usersave',
+  //   });
+  //   return { hola: 'mundo' };
+  // }
 
-  @Post('usersave')
-  saveUser(@Req() request) {
-    console.log(request.cookies);
-    return { hola: 'save user' };
-  }
+  // @Post('usersave')
+  // saveUser(@Req() request) {
+  //   console.log(request.cookies);
+  //   return { hola: 'save user' };
+  // }
 }
