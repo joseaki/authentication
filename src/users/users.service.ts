@@ -19,7 +19,7 @@ export class UsersService {
     }
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: Partial<User>) {
     try {
       return await this.userRepository.update(id, updateUserDto);
     } catch (error) {

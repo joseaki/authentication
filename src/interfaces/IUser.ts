@@ -39,6 +39,11 @@ export interface IRestorePassword {
   isValidPasswordToken: boolean;
 }
 
+export interface IRefreshToken {
+  refreshToken: string;
+  refreshTokenEmitDate: Date;
+}
+
 export interface IUserRegistration extends IUserEmail, IUserPassword {}
 
 export interface IUserCompleteRegistration

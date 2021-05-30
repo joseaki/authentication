@@ -2,6 +2,7 @@ import { BaseEntity } from 'src/common/entities/base.entity';
 import {
   IClientId,
   ICompleteUserRegistration,
+  IRefreshToken,
   IRestorePassword,
   IUserComplete,
   IUserMetadata,
@@ -20,7 +21,8 @@ export class User
     IClientId,
     ICompleteUserRegistration,
     IUserMetadata,
-    IRestorePassword {
+    IRestorePassword,
+    IRefreshToken {
   @Column({ type: 'boolean', default: false })
   isComplete: boolean;
 
@@ -85,4 +87,10 @@ export class User
 
   @Column({ default: false })
   isValidPasswordToken: boolean;
+
+  @Column()
+  refreshToken: string;
+
+  @Column()
+  refreshTokenEmitDate: Date;
 }

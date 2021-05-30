@@ -2,12 +2,8 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import {
-  IUserCompleteRegistration,
-  IUserEmail,
-  IUserPasswordUpdate,
-  IUserRegistration,
-} from 'src/interfaces/IUser';
+import { IUserPasswordUpdate, IUserRegistration } from 'src/interfaces/IUser';
+import { IUserCompleteRegistration, IUserEmail } from 'src/interfaces/IUser';
 import { UsersService } from 'src/users/users.service';
 import { MailService } from 'src/mailer/mailer.service';
 import { UnauthorizedException } from '@nestjs/common';
@@ -28,7 +24,7 @@ export class AuthService {
           email,
           clientId,
         );
-        bcrypt.compare(pass, user.password, function (err, result) {
+        bcrypt.compare(pass, user.password, (err, result) => {
           if (result === true) {
             const { password, ...rest } = user;
             resolve(rest);
@@ -43,34 +39,30 @@ export class AuthService {
   }
 
   async register(user: IUserRegistration, clientId) {
-    try {
-      const encriptedPassword = await this.encriptPassword(user.password);
-      const userToBeSaved: IUserCompleteRegistration = {
-        email: user.email,
-        password: encriptedPassword,
-        clientId: clientId,
-      };
-      return await this.userService.saveUserRegistration(userToBeSaved);
-    } catch (error) {
-      throw new BadRequestException('User already registered');
-    }
+    const encriptedPassword = await this.encriptPassword(user.password);
+    const userToBeSaved: IUserCompleteRegistration = {
+      email: user.email,
+      password: encriptedPassword,
+      clientId: clientId,
+    };
+    return this.userService.saveUserRegistration(userToBeSaved);
   }
 
-  async login(user: any) {
-    try {
-      const payload = {
-        username: user.email,
-        sub: user.id,
-        isComplete: user.isComplete,
-      };
-      const refreshToken = this.getRandomToken(128);
-      return {
-        access_token: this.jwtService.sign(payload),
-        refresh_token: refreshToken,
-      };
-    } catch (error) {
-      throw new BadRequestException('Incorrect user or password');
-    }
+  async login(user: User) {
+    const payload = {
+      username: user.email,
+      sub: user.id,
+      isComplete: user.isComplete,
+    };
+    const refreshToken = this.getRandomToken(128);
+    this.userService.update(user.id, {
+      refreshToken,
+      refreshTokenEmitDate: new Date(),
+    });
+    return {
+      access_token: this.jwtService.sign(payload),
+      refresh_token: refreshToken,
+    };
   }
 
   async restorePassword(user: IUserEmail, clientId: number) {
