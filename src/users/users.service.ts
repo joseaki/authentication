@@ -3,7 +3,7 @@ import { UpdateUserDto } from './dto/in/update-user.dto';
 import { User } from './entities/user.entity';
 import { IUserCompleteRegistration } from 'src/interfaces/IUser';
 import { UserRepository } from './repository/user.repository';
-
+import ErrorNames from './errors';
 @Injectable()
 export class UsersService {
   constructor(private userRepository: UserRepository) {}
@@ -15,7 +15,7 @@ export class UsersService {
       );
       return savedResponse;
     } catch (error) {
-      throw new NotAcceptableException('User already registered');
+      throw ErrorNames.USER_REGISTERED;
     }
   }
 
@@ -23,7 +23,7 @@ export class UsersService {
     try {
       return await this.userRepository.update(id, updateUserDto);
     } catch (error) {
-      throw new NotAcceptableException("Can't update user");
+      throw ErrorNames.USER_UPDATE;
     }
   }
 
@@ -33,20 +33,20 @@ export class UsersService {
         email,
         clientId,
       );
-      if (!user) throw new NotAcceptableException('Email does not exists');
+      if (!user) new Error();
       return user;
     } catch (error) {
-      throw error;
+      throw ErrorNames.USER_EMAIL_NOT_EXISTS;
     }
   }
 
   async findByEmail(email: string, clientId: number) {
     try {
       const user = await this.userRepository.findUserData(email, clientId);
-      if (!user) throw new NotAcceptableException('Email does not exists');
+      if (!user) throw Error();
       return user;
     } catch (error) {
-      throw error;
+      throw ErrorNames.USER_EMAIL_NOT_EXISTS;
     }
   }
 
@@ -56,27 +56,35 @@ export class UsersService {
         token,
         clientId,
       );
-      if (!user) throw new NotAcceptableException("Can't get a user");
+      if (!user) throw Error();
       return user;
     } catch (error) {
-      throw error;
+      throw ErrorNames.USER_NOT_EXISTS;
     }
   }
 
-  updatePassword(user: User) {
-    return this.userRepository.save({
-      id: user.id,
-      password: user.password,
-      isValidPasswordToken: false,
-    });
+  async updatePassword(user: User) {
+    try {
+      return await this.userRepository.save({
+        id: user.id,
+        password: user.password,
+        isValidPasswordToken: false,
+      });
+    } catch (error) {
+      throw ErrorNames.USER_UPDATE_PASSWORD;
+    }
   }
 
-  saveRestorePasswordToken(user: User, token) {
-    this.userRepository.save({
-      id: user.id,
-      restorePasswordToken: token,
-      restorePasswordDate: new Date(),
-      isValidPasswordToken: true,
-    });
+  async saveRestorePasswordToken(user: User, token) {
+    try {
+      return await this.userRepository.save({
+        id: user.id,
+        restorePasswordToken: token,
+        restorePasswordDate: new Date(),
+        isValidPasswordToken: true,
+      });
+    } catch (error) {
+      throw ErrorNames.USER_UPDATE_RESTORE_TOKEN;
+    }
   }
 }
