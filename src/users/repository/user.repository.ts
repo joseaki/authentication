@@ -4,28 +4,19 @@ import { User } from '../entities/user.entity';
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
   findUserData(email: string, clientId: number) {
-    return this.findOne({
+    return this.findOneOrFail({
       where: { email: email, clientId: clientId },
     });
   }
 
   findDelicateUserData(email: string, clientId: number) {
-    return this.findOne({
+    return this.findOneOrFail({
       where: { email: email, clientId: clientId },
-      select: [
-        'name',
-        'lastname',
-        'id',
-        'email',
-        'clientId',
-        'username',
-        'password',
-      ],
     });
   }
 
   findByRestorePasswordToken(token: string, clientId: number) {
-    return this.findOne({
+    return this.findOneOrFail({
       where: {
         isValidPasswordToken: true,
         restorePasswordToken: token,

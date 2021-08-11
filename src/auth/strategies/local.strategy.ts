@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { AuthService } from '../auth.service';
 import { IUserCompleteRegistration } from 'src/interfaces/IUser';
 
@@ -11,7 +11,7 @@ export class LocalStrategy {
     try {
       return await this.authService.validateUser(email, password, clientId);
     } catch (error) {
-      throw error;
+      throw new BadRequestException(error.message);
     }
   }
 }

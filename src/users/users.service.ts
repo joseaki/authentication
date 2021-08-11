@@ -3,10 +3,14 @@ import { UpdateUserDto } from './dto/in/update-user.dto';
 import { User } from './entities/user.entity';
 import { IUserCompleteRegistration } from 'src/interfaces/IUser';
 import { UserRepository } from './repository/user.repository';
-import ErrorNames from './errors';
+import { ErrorService } from '../error/error.service';
+import UserErrorNames from './errors';
 @Injectable()
 export class UsersService {
-  constructor(private userRepository: UserRepository) {}
+  constructor(
+    private userRepository: UserRepository,
+    private errorService: ErrorService,
+  ) {}
 
   async saveUserRegistration(userRegistrationData: IUserCompleteRegistration) {
     try {
@@ -15,7 +19,7 @@ export class UsersService {
       );
       return savedResponse;
     } catch (error) {
-      throw ErrorNames.USER_REGISTERED;
+      throw new Error(this.errorService.getErrorMessage(error));
     }
   }
 
@@ -23,7 +27,7 @@ export class UsersService {
     try {
       return await this.userRepository.update(id, updateUserDto);
     } catch (error) {
-      throw ErrorNames.USER_UPDATE;
+      throw new Error(this.errorService.getErrorMessage(error));
     }
   }
 
@@ -33,20 +37,18 @@ export class UsersService {
         email,
         clientId,
       );
-      if (!user) new Error();
       return user;
     } catch (error) {
-      throw ErrorNames.USER_EMAIL_NOT_EXISTS;
+      throw new Error(this.errorService.getErrorMessage(error));
     }
   }
 
   async findByEmail(email: string, clientId: number) {
     try {
       const user = await this.userRepository.findUserData(email, clientId);
-      if (!user) throw Error();
       return user;
     } catch (error) {
-      throw ErrorNames.USER_EMAIL_NOT_EXISTS;
+      throw new Error(this.errorService.getErrorMessage(error));
     }
   }
 
@@ -56,10 +58,9 @@ export class UsersService {
         token,
         clientId,
       );
-      if (!user) throw Error();
       return user;
     } catch (error) {
-      throw ErrorNames.USER_NOT_EXISTS;
+      throw new Error(this.errorService.getErrorMessage(error, 'token_error'));
     }
   }
 
@@ -71,7 +72,7 @@ export class UsersService {
         isValidPasswordToken: false,
       });
     } catch (error) {
-      throw ErrorNames.USER_UPDATE_PASSWORD;
+      throw new Error(this.errorService.getErrorMessage(error));
     }
   }
 
@@ -84,7 +85,7 @@ export class UsersService {
         isValidPasswordToken: true,
       });
     } catch (error) {
-      throw ErrorNames.USER_UPDATE_RESTORE_TOKEN;
+      throw new Error(this.errorService.getErrorMessage(error));
     }
   }
 }

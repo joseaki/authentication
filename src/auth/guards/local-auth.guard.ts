@@ -57,6 +57,7 @@ export class LocalAuthGuard implements CanActivate {
         req.user = user;
         resolve(true);
       } catch (error) {
+        console.log(error);
         reject(error);
       }
     });

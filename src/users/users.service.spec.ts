@@ -4,7 +4,7 @@ import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import DatabaseConfig from 'src/config/database.config';
 import { IUserCompleteRegistration } from 'src/interfaces/IUser';
 import { User } from './entities/user.entity';
-import ErrorNames from './errors';
+import UserErrorNames from './errors';
 import { UserRepository } from './repository/user.repository';
 import { UsersService } from './users.service';
 
@@ -133,7 +133,7 @@ describe('UsersService', () => {
         .mockRejectedValueOnce(new Error('error'));
       await expect(
         userService.saveUserRegistration(userRegistration),
-      ).rejects.toEqual(ErrorNames.USER_REGISTERED);
+      ).rejects.toEqual(UserErrorNames.USER_REGISTERED);
       expect(saveUser).toBeCalledTimes(1);
       expect(saveUser).toBeCalledWith(userRegistration);
     });
@@ -153,7 +153,7 @@ describe('UsersService', () => {
         .spyOn(userRepository, 'update')
         .mockRejectedValueOnce(new Error('error'));
       await expect(userService.update(userId, updateUserValue)).rejects.toEqual(
-        ErrorNames.USER_UPDATE,
+        UserErrorNames.USER_UPDATE,
       );
       expect(updateUser).toHaveBeenCalledTimes(1);
       expect(updateUser).toHaveBeenCalledWith(userId, updateUserValue);
@@ -178,7 +178,7 @@ describe('UsersService', () => {
         .mockRejectedValueOnce(new Error('error'));
       await expect(
         userService.findPasswordByEmail(userEmail, clientId),
-      ).rejects.toEqual(ErrorNames.USER_EMAIL_NOT_EXISTS);
+      ).rejects.toEqual(UserErrorNames.USER_EMAIL_NOT_EXISTS);
       expect(findDelicateUserData).toHaveBeenCalledTimes(1);
       expect(findDelicateUserData).toHaveBeenCalledWith(userEmail, clientId);
     });
@@ -204,7 +204,7 @@ describe('UsersService', () => {
         .mockRejectedValueOnce(new Error('error'));
       await expect(
         userService.findByEmail(userEmail, clientId),
-      ).rejects.toEqual(ErrorNames.USER_EMAIL_NOT_EXISTS);
+      ).rejects.toEqual(UserErrorNames.USER_EMAIL_NOT_EXISTS);
       expect(findUserData).toHaveBeenCalledTimes(1);
       expect(findUserData).toHaveBeenCalledWith(userEmail, clientId);
     });
@@ -230,7 +230,7 @@ describe('UsersService', () => {
         .mockRejectedValueOnce(new Error('error'));
       await expect(
         userService.findByRestoreToken(restorePasswordToken, clientId),
-      ).rejects.toEqual(ErrorNames.USER_NOT_EXISTS);
+      ).rejects.toEqual(UserErrorNames.USER_NOT_EXISTS);
       expect(findByRestorePasswordToken).toHaveBeenCalledTimes(1);
       expect(findByRestorePasswordToken).toHaveBeenCalledWith(
         restorePasswordToken,
@@ -257,7 +257,7 @@ describe('UsersService', () => {
         .mockRejectedValueOnce(new Error('error'));
       await expect(
         userService.updatePassword(userUpdatePassword as User),
-      ).rejects.toEqual(ErrorNames.USER_UPDATE_PASSWORD);
+      ).rejects.toEqual(UserErrorNames.USER_UPDATE_PASSWORD);
       expect(save).toHaveBeenCalledTimes(1);
       expect(save).toHaveBeenCalledWith({
         ...userUpdatePassword,
@@ -293,7 +293,7 @@ describe('UsersService', () => {
           userUpdatePassword as User,
           restorePasswordToken,
         ),
-      ).rejects.toEqual(ErrorNames.USER_UPDATE_RESTORE_TOKEN);
+      ).rejects.toEqual(UserErrorNames.USER_UPDATE_RESTORE_TOKEN);
       expect(save).toHaveBeenCalledTimes(1);
       expect(save).toHaveBeenCalledWith({
         id: userId,

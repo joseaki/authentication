@@ -1,9 +1,9 @@
 import { NotAcceptableException } from '@nestjs/common';
 
-const ErrorNames = {
+const UserErrorNames = {
   USER_REGISTERED: new NotAcceptableException('User already registered'),
   USER_UPDATE: new NotAcceptableException("Can't update user"),
-  USER_EMAIL_NOT_EXISTS: new NotAcceptableException('Email does not exists'),
+  USER_EMAIL_NOT_EXISTS: 'Email does not exists',
   USER_NOT_EXISTS: new NotAcceptableException('Email does not exists'),
   USER_UPDATE_PASSWORD: new NotAcceptableException(
     "Can't update user password",
@@ -13,4 +13,13 @@ const ErrorNames = {
   ),
 };
 
-export default ErrorNames;
+export const SQLErrors = {
+  ER_DUP_ENTRY: 'User already registered',
+};
+
+export const SQLErrorsOther = {
+  NOT_FOUND: 'User not found',
+  TOKEN_NOT_FOUND: 'Token expired or non existant',
+};
+
+export default UserErrorNames;

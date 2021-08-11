@@ -1,30 +1,28 @@
-import {
-  Body,
-  Controller,
-  Post,
-  UseGuards,
-  UseInterceptors,
-  Request,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { UseInterceptors, Request, Res } from '@nestjs/common';
 import { ApiHeader, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ConvertResponseToDtoInterceptor } from 'src/Interceptors/convert-response-to-dto.interceptor';
-import { ValidateBodyPipe } from 'src/Pipes/validate-body.pipe';
-import { RegisterUserDto } from 'src/auth/dto/in/register-user.dto';
-import { CreateUserOutDto } from 'src/auth/dto/out/user-registered-out.dto';
-import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './guards/local-auth.guard';
-import { LoginUserDto } from './dto/in/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
-import {
-  UserPasswordRecovery,
-  UserPasswordUpdate,
-} from './dto/in/password_recovery.dto';
-import { HeaderDTO } from './dto/in/header.dto';
-import { RequestHeader } from './decorators/request-header.decorator';
-import { IHeader } from 'src/interfaces/IHeaders';
+
+// Services
+import { AuthService } from './auth.service';
+// Decorators
 import { HeadersAuthGuard } from './guards/headers.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { RequestHeader } from './decorators/request-header.decorator';
+import { ValidateBodyPipe } from 'src/Pipes/validate-body.pipe';
+import { ConvertResponseToDtoInterceptor } from 'src/Interceptors/convert-response-to-dto.interceptor';
+// DTO IN
+import { RegisterUserDto } from 'src/auth/dto/in/register-user.dto';
+import { LoginUserDto } from './dto/in/login-user.dto';
+import { UserPasswordRecovery } from './dto/in/password_recovery.dto';
+import { UserPasswordUpdate } from './dto/in/password_recovery.dto';
+import { HeaderDTO } from './dto/in/header.dto';
+// DTO OUT
+import { CreateUserOutDto } from 'src/auth/dto/out/user-registered-out.dto';
 import { UserLoginOutDto } from './dto/out/user-login-out.dto';
+import { UserUpdatePasswordDto } from './dto/out/user-update-password.dto';
+// Types
+import { IHeader } from 'src/interfaces/IHeaders';
 
 @ApiTags('User oeprations')
 @ApiHeader({
@@ -94,8 +92,13 @@ export class AuthController {
     );
   }
 
-  // Update Password
   @Post('update_password')
+  @ApiResponse({
+    status: 201,
+    type: UserUpdatePasswordDto,
+    description: 'Response after updating user password',
+  })
+  @UseInterceptors(new ConvertResponseToDtoInterceptor(UserUpdatePasswordDto))
   updatePassword(
     @RequestHeader(HeaderDTO) headers: IHeader,
     @Body(new ValidateBodyPipe()) updateUserPassword: UserPasswordUpdate,
