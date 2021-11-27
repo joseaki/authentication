@@ -8,8 +8,8 @@ if (result.error) {
 }
 
 export const DatabaseConfig = {
-  type: 'mysql' as any,
-  driver: 'mysql',
+  type: 'mssql' as any,
+  driver: 'mssql',
   database: process.env.TYPEORM_DATABASE || 'authentication',
   port: parseInt(process.env.TYPEORM_PORT) || 3306,
   username: process.env.TYPEORM_USERNAME,

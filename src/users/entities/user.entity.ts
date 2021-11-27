@@ -23,7 +23,7 @@ export class User
     IUserMetadata,
     IRestorePassword,
     IRefreshToken {
-  @Column({ type: 'boolean', default: false })
+  @Column({ type: 'tinyint', default: false })
   isComplete: boolean;
 
   @Column()
@@ -40,57 +40,57 @@ export class User
   // export class CompleteUserInfo
   //   extends User
   //   implements ICompleteUserRegistration, IUserMetadata, IRestorePassword {
-  @Column()
+  @Column({ nullable: true })
   username: string;
 
-  @Column()
+  @Column({ nullable: true })
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   lastname: string;
 
-  @Column()
+  @Column({ nullable: true })
   displayname: string;
 
-  @Column()
+  @Column({ nullable: true })
   birthday: Date;
 
-  @Column()
+  @Column({ nullable: true })
   gender: string;
 
-  @Column()
+  @Column({ nullable: true })
   district: string;
 
-  @Column()
+  @Column({ nullable: true })
   address: string;
 
-  @Column()
+  @Column({ nullable: true })
   postCode: string;
 
-  @Column()
+  @Column({ nullable: true })
   telephone: string;
 
-  @Column()
+  @Column({ nullable: true })
   lastLogin: Date;
 
-  @Column()
+  @Column({ nullable: true })
   lastLoginIP: string;
 
-  @Column()
+  @Column({ nullable: true })
   registeredIP: string;
 
-  @Column()
+  @Column({ nullable: true })
   restorePasswordToken: string;
 
-  @Column()
+  @Column({ nullable: true })
   restorePasswordDate: Date;
 
   @Column({ default: false })
   isValidPasswordToken: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   refreshToken: string;
 
-  @Column()
+  @Column({ nullable: true })
   refreshTokenEmitDate: Date;
 }

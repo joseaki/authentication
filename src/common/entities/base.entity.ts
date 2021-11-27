@@ -31,22 +31,22 @@ export abstract class BaseEntity
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'boolean', default: true })
+  @Column({ type: 'tinyint', default: true })
   isActive: boolean;
 
-  @Column({ type: 'boolean', default: false })
+  @Column({ type: 'tinyint', default: false })
   isArchived: boolean;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn({ default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Column({ type: 'varchar', length: 300 })
+  @Column({ type: 'varchar', length: 300, nullable: true })
   createdBy: string;
 
-  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @UpdateDateColumn({ default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @Column({ type: 'varchar', length: 300 })
+  @Column({ type: 'varchar', length: 300, nullable: true })
   updatedBy: string;
 
   @DeleteDateColumn()

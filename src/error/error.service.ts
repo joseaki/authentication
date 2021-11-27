@@ -12,7 +12,7 @@ export class ErrorService {
       } else if (error.name === 'EntityNotFound') {
         return SQLErrorsOther.NOT_FOUND;
       } else {
-        return 'Error desconocido';
+        return 'Error desconocido---' + error.name + '---' + error.message;
       }
     } else {
       if (override === 'token_error') {
