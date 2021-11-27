@@ -47,6 +47,7 @@ export class AuthController {
     type: CreateUserOutDto,
     description: 'User response after creation',
   })
+  // Clean the output response to the desired DTO
   @UseInterceptors(new ConvertResponseToDtoInterceptor(CreateUserOutDto))
   create(
     @RequestHeader(HeaderDTO) headers: IHeader,

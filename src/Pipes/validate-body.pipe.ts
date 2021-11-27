@@ -10,11 +10,16 @@ import { validate } from 'class-validator';
 @Injectable()
 export class ValidateBodyPipe implements PipeTransform {
   async transform(value: any, { metatype }: ArgumentMetadata) {
-    if (!metatype || !this.toValidate(metatype)) {
+    if (!metatype || this.isScalarType(metatype)) {
       return value;
     }
-    const object = plainToClass(metatype, value);
+
+    const object = plainToClass(metatype, value, {
+      excludeExtraneousValues: true,
+    });
+
     const errors = await validate(object, { whitelist: true });
+
     if (errors.length > 0) {
       throw new BadRequestException(
         errors.map((error) => ({
@@ -29,8 +34,8 @@ export class ValidateBodyPipe implements PipeTransform {
     return object;
   }
 
-  private toValidate(metatype: Function): boolean {
-    const types: Function[] = [String, Boolean, Number, Array, Object];
-    return !types.includes(metatype);
+  private isScalarType(metatype: any): boolean {
+    const types = [String, Boolean, Number, Array, Object];
+    return types.includes(metatype);
   }
 }
