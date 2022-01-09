@@ -8,14 +8,8 @@ import {
   IUpdateDateParam,
   IUpdateUserParam,
   ICommentParam,
-} from 'src/interfaces/IUniversal';
-import {
-  PrimaryGeneratedColumn,
-  Column,
-  UpdateDateColumn,
-  CreateDateColumn,
-  DeleteDateColumn,
-} from 'typeorm';
+} from 'interfaces/IUniversal';
+import { PrimaryGeneratedColumn, Column, UpdateDateColumn, CreateDateColumn, DeleteDateColumn } from 'typeorm';
 
 export abstract class BaseEntity
   implements
@@ -27,34 +21,32 @@ export abstract class BaseEntity
     IDeletedUserParam,
     IUpdateDateParam,
     IUpdateUserParam,
-    ICommentParam {
+    ICommentParam
+{
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'boolean', default: true })
+  @Column({ name: 'is_active', type: 'boolean', default: true })
   isActive: boolean;
 
-  @Column({ type: 'boolean', default: false })
-  isArchived: boolean;
-
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @Column({ type: 'varchar', length: 300 })
+  @Column({ name: 'created_by', nullable: true, type: 'varchar', length: 300 })
   createdBy: string;
 
-  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  @Column({ type: 'varchar', length: 300 })
+  @Column({ name: 'update_by', nullable: true, type: 'varchar', length: 300 })
   updatedBy: string;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
   deletedAt: Date;
 
-  @Column({ type: 'varchar', length: 300, nullable: true })
+  @Column({ name: 'deleted_by', type: 'varchar', length: 300, nullable: true })
   deletedBy: string;
 
-  @Column({ type: 'varchar', length: 300, nullable: true })
+  @Column({ name: 'internal_comment', type: 'varchar', length: 300, nullable: true })
   internalComment: string | null;
 }

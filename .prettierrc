@@ -1,4 +1,19 @@
 {
   "singleQuote": true,
-  "trailingComma": "all"
+  "trailingComma": "all",
+  "printWidth": 100,
+  "overrides": [
+    {
+      "files": ["*entity.ts"],
+      "options": {
+        "printWidth": 160
+      }
+    },
+    {
+      "files": ["*controller.ts"],
+      "options": {
+        "printWidth": 180
+      }
+    }
+  ]
 }
