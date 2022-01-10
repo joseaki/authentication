@@ -1,10 +1,12 @@
 import {
-  BadRequestException,
   createParamDecorator,
   ExecutionContext,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
-import { validate, validateOrReject } from 'class-validator';
+import { validate } from 'class-validator';
+import { ERROR } from 'common/constants/errors';
+import { IValidationError } from 'common/interfaces/IValidationError';
 
 export const validateHeaders = async (value: any, ctx: ExecutionContext) => {
   // extract headers
@@ -17,14 +19,15 @@ export const validateHeaders = async (value: any, ctx: ExecutionContext) => {
   const errors = await validate(dto, { whitelist: true });
 
   if (errors.length > 0) {
-    throw new BadRequestException(
-      errors.map((error) => ({
-        constraints: error.constraints,
+    throw new UnprocessableEntityException(
+      errors.map<IValidationError>((error) => ({
+        constraints: Object.values(error.constraints),
+        codes: Object.keys(error.constraints),
         value: error.value,
         property: error.property,
         children: error.children,
       })),
-      'Validation Error',
+      ERROR.VALIDATION_ERROR,
     );
   }
   // return header dto object

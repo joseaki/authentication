@@ -11,7 +11,7 @@ export class LocalStrategy {
     try {
       return await this.authService.validateUser(email, password, clientId);
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw error;
     }
   }
 }

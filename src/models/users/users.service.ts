@@ -37,7 +37,6 @@ export class UsersService {
       const user = await this.userRepository.findDelicateUserData(email, clientId);
       return user;
     } catch (error) {
-      console.log('error', error);
       const errorMessage = this.errorService.getErrorMessage(error);
       throw this.errorService.getException(errorMessage);
     }

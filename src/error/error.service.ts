@@ -5,11 +5,8 @@ import { SQLErrors } from './exceptions/sql.exception';
 @Injectable()
 export class ErrorService {
   getErrorMessage(error: Record<string, any>, override?: string) {
-    console.log(error);
     if (!override) {
-      if (error.name === 'EntityNotFound') {
-        return SQLErrors.NOT_FOUND;
-      } else if (error.name === 'EntityNotFound') {
+      if (error.name === 'EntityNotFound' || error.name === 'EntityNotFoundError') {
         return SQLErrors.NOT_FOUND;
       } else if (error.driverError.constraint === 'UNQ_USER') {
         return SQLErrors.UNQ_USER;
@@ -24,7 +21,6 @@ export class ErrorService {
   }
 
   getException(errorMessage: ExceptionError, error?: string) {
-    console.trace('ERROR ERROR');
     return new UnprocessableEntityException(
       [
         {

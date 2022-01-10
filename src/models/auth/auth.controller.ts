@@ -23,6 +23,7 @@ import { UserLoginOutDto } from './dto/out/user-login-out.dto';
 import { UserUpdatePasswordDto } from './dto/out/user-update-password.dto';
 // Types
 import { IHeader } from 'interfaces/IHeaders';
+import { TransformResponseInterceptor } from 'common/Interceptors/transform-response.interceptor';
 
 @ApiTags('User oeprations')
 @ApiHeader({
@@ -53,6 +54,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @UseGuards(HeadersAuthGuard)
   @UseInterceptors(new ConvertResponseToDtoInterceptor(UserLoginOutDto))
+  @UseInterceptors(TransformResponseInterceptor)
   async login(@RequestHeader(HeaderDTO) headers: IHeader, @Body(new ValidateBodyPipe()) loginUserDto: LoginUserDto, @Request() req, @Res({ passthrough: true }) response) {
     const credentials = await this.authService.login(req.user);
     // response.cookie('ART', credentials.refresh_token, {
@@ -62,6 +64,11 @@ export class AuthController {
     // });
     return credentials;
   }
+
+  // @Post("refresh_token")
+  // getToken(@RequestHeader(HeaderDTO) headers: IHeader, @Body(new ValidateBodyPipe()){
+
+  // }
 
   // RESTORE USER PASSWORD
   @Post('change_password')
